@@ -1,0 +1,72 @@
+#account {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+    flex-direction: row wrap;
+
+    font-family: 'Roboto Condensed', sans-serif;
+
+    position: absolute;
+
+    height: 100px;
+    width: 350px;
+
+    right: 0;
+    top: 0;
+
+    border-radius: 10px;
+
+    background-color: black;
+
+    margin: 20px;
+}
+
+#log-in, #sign-in {
+    position: relative;
+
+    height: 50px;
+    width: 150px;
+
+    border-radius: 10px;
+
+    background-color: wheat;
+
+    margin: 10px;
+
+    transition: 1s;
+}
+
+#sign-in:hover {
+    background-color: white;
+
+    transition: 1s;
+    height: 50px;
+    width: 180px;
+}
+
+#log-in:hover {
+    background-color: white;
+
+    transition: 1s;
+    height: 50px;
+    width: 180px;
+}
+
+#log-in:hover + #sign-in {
+    background-color: white;
+
+    transition: 1s;
+
+    height: 40px;
+    width: 130px;
+}
+
+#sign-in:hover + #log-in {
+    background-color: white;
+
+    transition: 1s;
+
+    height: 40px;
+    width: 130px;
+}
