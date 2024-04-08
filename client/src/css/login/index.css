@@ -1,3 +1,5 @@
+@import 'https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap';
+
 * {
     padding: 0;
     margin: 0;
@@ -18,13 +20,6 @@ body {
     background-position: center;
     background-repeat: repeat;
     background-size: cover;
-
-    backdrop-filter: blur(10px);
-}
-
-a {
-    outline: invert;
-    text-decoration: underline;
 }
 
 span, a {
@@ -40,7 +35,12 @@ span, a {
     rgb(255, 221, 221) 100%);
 }
 
-.reg-main {
+a {
+    outline: invert;
+    text-decoration: none;
+}
+
+.login-main {
     position: absolute;
     display: flex;
 
@@ -53,39 +53,6 @@ span, a {
     font-family: 'Roboto Condensed', sans-serif;
 }
 
-#reg-successed {
-    display: none;
-    
-    flex-wrap: nowrap;
-    flex-direction: column;
-    align-items: center;
-
-    transition: 1s ease-in-out;
-}
-
-#reg-passwordEye {
-    position: relative;
-
-    height: 30px;
-    width: 30px;
-
-    background-image: url(../../vektor-image/eye_closed.svg);
-
-    outline: none;
-    box-shadow: none;
-    border: 0px solid white;
-
-    transition: 1s ease-in-out;
-}
-
-#reg-passwordEye:hover {
-    cursor: pointer;
-
-    background-image: url(../../vektor-image/eye_open.svg);
-
-    transition: 1s ease-in-out;
-}
-
 #form-submit {
     position: relative;
     
@@ -95,7 +62,7 @@ span, a {
     transition: 1s ease-out;
 }
 
-#reg-submit {
+#login-submit {
     position: relative;
 
     height: 100%;
@@ -119,10 +86,32 @@ span, a {
     transition: 1s ease-out;
 }
 
-#form-submit:hover #reg-submit {
+#form-submit:hover #login-submit {
     cursor: pointer;
 }
 
+#login-passwordEye {
+    position: relative;
+
+    height: 30px;
+    width: 30px;
+
+    background-image: url(../../vektor-image/eye_closed.svg);
+
+    outline: none;
+    box-shadow: none;
+    border: 0px solid white;
+
+    transition: 1s ease-in-out;
+}
+
+#login-passwordEye:hover {
+    cursor: pointer;
+
+    background-image: url(../../vektor-image/eye_open.svg);
+
+    transition: 1s ease-in-out;
+}
 #add {
     position: relative;
 
@@ -133,10 +122,11 @@ span, a {
     justify-content: center;
     
     margin: 10px;
+
     transition: 1s ease-in-out;
 }
 
-#reg-reg {
+#login-login {
     display: flex;
 
     flex-wrap: wrap;
@@ -152,21 +142,20 @@ span, a {
     border-color: rgba(182, 182, 182, 0.183);
     border-radius: 10%;
     
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(5px);
 }
 
-.reg-input {
+.login-input {
     width: 200px;
-    height: 40px;
+    height: 20px;
     
     padding: 10px;
 
     text-align: center;
     border-radius: 10px;
-    transition: 1s ease-in-out;
 }
 
-.reg-input-inner-div {
+.login-input-inner-div {
     display: flex;
 
     flex-wrap: wrap;
@@ -178,5 +167,4 @@ span, a {
     width: 300px;
 
     margin: 30px;
-    transition: 1s ease-in-out;
 }

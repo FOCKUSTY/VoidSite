@@ -1,0 +1,827 @@
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="../../css/index.css"> -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet"> -->
+	<link rel="stylesheet" type="text/css" href="../../css/index.css">
+    <title>VoidSite</title>
+  </head>
+  <body>
+  <header>
+        <div id="authorization">
+            <form action="../login" id="form-login">
+                <button id="button-login" class="auth-button">Войти</button>
+            </form>
+            <div id="user" style="display: flex; flex-direction: row-reverse; justify-content: center; align-items: center;">
+                <p id="user-nickname" style="margin: 10px; font-size: 24px;"></p>
+                <img id="user-avatar" src="../../image/TheVoidAvatarSite.png"
+                style="width: 20%; border-radius: 50%; display: none;">
+            </div>
+        </div>
+
+        <section id="settings">
+            <button id="button-settings">
+                <img src="../../vektor-image/settings.svg"
+                style="height: 50px; width: 50px;">
+            </button>
+        </section>
+    </header>
+  
+    <main>
+        <nav id="nav-chats">
+            <header id="nav-header">
+                <span>Чаты</span>
+                <button id="create-chat">
+                    <img id="create-img" src="../../vektor-image/plus.svg">
+                </button>
+            </header>
+
+            <div id="you" class="button-user">
+                <button id="button-you">
+                <img id="avatar-you" src="../../image/TheVoidAvatarSite.png">
+                <span id="span-you">Вы</span>
+                </button>
+            </div>
+        </nav>
+
+        <section id="chat">
+
+        <article id="chat-info">
+            <img src="../../image/TheVoidAvatarSite.png" class="chat-avatar"></img>
+            <p class="chat-text">Здесь будет название чата</p>
+        </article>
+
+        <article id="messages">
+            
+            <div class="message alien-message">
+                <div class="sended sended-alien">
+                    <img class="message-avatar" src="../../image/TheVoidAvatarSite.png">
+                    <p class="message-nickname">Здесь будет псевдоним другого человека</p>
+                </div>
+                <p class="message-text">Хей, привет, дружище ! Как думаешь, почему здесь это страничка ? А чтобы изучить тебя, считай, что это как обучение WASD для геймера, можешь даже не обращать внимания! Хотя, попробуй пожмакать разные штуки и тогда сможешь попасть в особую команду, навидись на ифну о чате, кстати, введите любое сообщение! ы</p>
+            </div>
+
+            <div class="message self-message">
+                <div class="sended sended-self">
+                    <img class="message-avatar" src="../../image/TheVoidAvatarSite.png">
+                    <p class="message-nickname">Здесь будет Ваш псевдоним</p>
+                </div>
+                <p class="message-text">Ого, вау, класс-класс... Так интересно, угу... Ага...</p>
+            </div>
+        </article>
+
+        <form action="" id="form-send">
+            <div id="write-message">
+
+            <textarea
+            placeholder="Напишите своё сообщение"
+            id="write"
+            ></textarea>
+
+            <input id="send-writed" type="submit" value="">
+            </div>
+        </form>
+        </section>
+    </main>
+
+    <article id="main-modal">
+        <section id="nav-modal-chats"></section>
+
+        <section id="main-settings"></section>
+        <section id="center-modal">
+            <div id="chat-modal" class="modal">
+                <header class="modal-header" id="chat-modal-header">
+                    <img src="../../vektor-image/cross.svg" id="cross"></img>
+                </header>
+                <div class="chat-modal-info">
+                    <img class="chat-modal-avatar" src="../../image/TheVoidAvatarSite.png">
+                    <p class="chat-modal-text">Здесь информация о чате</p>
+                </div>
+            </div>
+            <div id="create-modal" class="modal">
+                <header class="modal-header" id="create-modal-header">
+                    <img src="../../vektor-image/cross.svg" id="cross"></img>
+                    <span style="margin: 0 25% 0 30%;"
+                    >Создайте свой чат!</span>
+                </header>
+
+                <main style="flex-direction: column; flex-grow: 0;">
+                    <button id="create-modal-chat-avatar-button">
+                        <input
+                        type="file" accept=".png, .jpg, .jpeg"
+                        id="create-modal-chat-avatar"
+                        />
+                        <img id="create-modal-chat-avatar-uploaded" src="../../image/TheVoidAvatarSite.png" alt="">
+                        <span style="margin: 10px auto; font-size: 24px;">Иконка чата</span>
+                    </button>
+                    
+                    <input id="create-modal-chat-name" type="text" placeholder="Название чата"/>
+                    <input type="submit" value="Готово!" id="create-modal-chat-submit"/>
+                </main>
+
+            </div>
+        </section>
+    </article>
+
+  <!-- <script src="../../javaScript/index.js"></script> -->
+
+  
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+<script>		
+	$(function(){
+    function getCookie(name)
+    {
+        let matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    };
+
+    class User
+    {
+        id = '';
+        email = '';
+        username = '';
+        nickname = '';
+        avatarURL = '';
+
+        constructor(id, email, username, nickname, avatarURL)
+        {
+            this.id = id;
+            this.email = email;
+            
+            this.username = username;
+            this.nickname = nickname;
+            this.avatarURL = avatarURL;
+        };
+    };
+
+    class Message
+        {
+            id = '';
+            content = '';
+            
+            chat = {id:'', name:''};
+            
+            username = '';
+            nickname = '';
+            user = new User();
+
+            constructor(id, content, chat = {id:'', name:''}, user = new User())
+            {
+                this.id = id;
+                this.content = content;
+                
+                this.chat = chat;
+                this.user = user;
+
+                this.username = user.username;
+                this.nickname = user.nickname;
+            }
+
+            setChatId = (chat = {id:'', name:''}) =>
+            {
+                this.chat = chat;
+            };
+
+            setMessage = (message = {id:'', content:''}) =>
+            {
+                this.id = message.id;
+                this.messageContent = message.content;
+            };
+            
+            setUser = (user = new User()) =>
+            {
+                this.username = user.username;
+                this.nickname = user.nickname;
+
+                this.user = user;
+            };
+
+            set message(msg = {id:'', content:''})
+            {
+                this.id = msg.id;
+                this.content = msg.content;
+            };
+
+            /**
+             * @param {any} user
+            */
+        
+            set user(user = new User())
+            {
+                this.user = user;
+            }
+            
+            /**
+             * @param {any} chat
+            */
+
+            set chat(chat = {id: '', name: ''})
+            {
+                this.chat = chat;
+            }
+
+            /**
+             * @returns {any}
+             */
+            get user()
+            {
+                return this.user;
+            };
+
+            get message()
+            {
+                return { id: this.id, content: this.content };
+            };
+
+            get chat()
+            {
+                return this.chat;
+            }
+        };
+    
+    const articleMessages = document.getElementById('messages');
+    const inputWriteMessage = document.getElementById('write');
+    const writeMessage = document.getElementById('write-message');
+    const formSend = document.getElementById('form-send');;
+    const sendWriten = document.getElementById('send-writed');
+    const formLogin = document.getElementById('form-login');
+    const auth = document.getElementById('authtorization');
+    const userDiv = document.getElementById('user');
+    const userNicknameInUserDiv = document.getElementById('user-nickname')
+    const userAvatarInUserDiv = document.getElementById('user-avatar')
+    const mainModal = document.getElementById('main-modal');
+    const chatModal = document.getElementById('chat-modal');
+    const chatInfo = document.getElementById('chat-info');
+    const mainSettings = document.getElementById('main-settings');
+    const navModalChats = document.getElementById('nav-modal-chats');
+    const avatarYou = document.getElementById('avatar-you');
+    const createChatButton = document.getElementById('create-chat');
+    const createModal = document.getElementById('create-modal');
+
+    let inputWriteMessageContinueHeight = 80;
+    let writeMessageContinueHeight = 45; 
+    let articleMessagesContinueHeight = 85;
+    let formSendContinueHeight = 10;
+    let chatInfoIsClicked = false;
+    let createButtonIsClicked = false;
+    let navModalChatsIsVisible = false;
+    
+    let charCode = 0;
+    let oldCharCode = 0;
+    
+    
+    
+    const beforeModals =
+    {
+        'createChatButton':
+        {
+            'main': createChatButton,
+            'booleanText': 'createButtonIsClicked',
+            'boolean': createButtonIsClicked,
+            'modal': createModal
+        },
+        'chatInfo':
+        {
+            'main': chatInfo,
+            'booleanText': 'chatInfoIsClicked',
+            'boolean': chatInfoIsClicked,
+            'modal': chatModal
+        }
+    }
+
+
+    const modals =
+    {
+        'chat-modal':
+        {
+            'main': chatModal,
+            'booleanText': 'chatInfoIsClicked',
+            'boolean': chatInfoIsClicked
+        },
+        'create-modal':
+        {
+            'main': createModal,
+            'booleanText': 'createButtonIsClicked',
+            'boolean': createButtonIsClicked
+        },
+    }
+
+
+    for(let name in beforeModals)
+    {
+        const beforeModal = beforeModals[name];
+
+        beforeModal.main.onclick = (e) =>
+        {
+            if(beforeModal.boolean)
+            {
+                eval(`${beforeModal.booleanText} = false`);
+                beforeModal.boolean = false;
+                return;
+            };  
+    
+            eval(`${beforeModal.booleanText} = true`);
+            beforeModal.boolean = true;
+            navModalChatsIsVisible = true;
+    
+            mainModal.style.display = "flex";
+            beforeModal.modal.style.display = "flex";
+            navModalChats.style.display = 'flex';
+
+            mainModal.animate({ opacity: '100%' }, {duration: 300, iterations: 1, fill:"both"});
+            beforeModal.modal.animate({ opacity: '100%' }, {duration: 300, iterations: 1, fill:"both"});
+        };
+    };
+
+    mainModal.onclick = (e) =>
+    {
+        for(let name in modals)
+        {
+            const modal = modals[name];
+
+            console.log(name, !eval(modal.booleanText), e.target.id.indexOf(`${name}`) != -1, e.target.id == '')
+
+            if(!eval(modal.booleanText) || (e.target.id.indexOf(`${name}`) != -1 || e.target.id == ''))
+                continue;
+    
+            eval(`${modal.booleanText} = false`);
+            modal.boolean = false;
+    
+            mainModal.animate({ opacity: '0%' }, {duration: 300, iterations: 1, fill:"both"});
+            modal.main.animate({ opacity: '0%' }, {duration: 300, iterations: 1, fill:"both"});
+        
+            setTimeout(() =>
+            {
+                modal.main.style.display = "none";
+                mainModal.style.display = "none";
+                navModalChats.style.display = 'none';
+            }, 300);
+        };
+    };
+
+
+
+
+
+
+
+
+
+
+    const nulled = () =>
+    {
+        inputWriteMessage.style.height = `80%`;
+        
+        writeMessage.style.height = `45%`;
+        formSend.style.height = `10%`;
+        articleMessages.style.height = `85%`;
+    
+        inputWriteMessageContinueHeight = 80; 
+    
+        writeMessageContinueHeight = 45; 
+        articleMessagesContinueHeight = 85;
+        formSendContinueHeight = 10;
+    };
+    
+    const minus = () =>
+    {
+        inputWriteMessageContinueHeight -= 5;
+        
+        writeMessageContinueHeight -= 5;
+        formSendContinueHeight -= 1;
+        articleMessagesContinueHeight += 1;
+    
+        inputWriteMessage.style.height = `${inputWriteMessageContinueHeight}%`;
+        
+        writeMessage.style.height = `${writeMessageContinueHeight}%`;
+        formSend.style.height = `${formSendContinueHeight}%`;
+        articleMessages.style.height = `${articleMessagesContinueHeight}%`;
+    };
+    
+    inputWriteMessage.addEventListener('keydown', (e) =>
+    {
+        charCode = e.keyCode;
+    
+        const length = e.target.value.split('\n').length;
+    
+        if(formSend.style.height === '10%')
+            return;
+        
+        if(e.charCode === 13)
+        {
+            oldCharCode = charCode;
+            return;
+        };
+        
+        if(inputWriteMessage.value === '')
+            nulled();
+    
+        if((length <= 5) && (charCode === 8 && oldCharCode === 13) || (oldCharCode === 8 && charCode === 8 && (inputWriteMessage.value[inputWriteMessage.value.length-1]) === '\n'))
+            minus();
+    
+        oldCharCode = charCode;
+    });
+    
+    inputWriteMessage.addEventListener('keypress', (e) =>
+    {
+        charCode = e.charCode;
+    
+        if(e.charCode != 13)
+            return;
+    
+        if(formSend.style.height != '15%')
+        {
+            inputWriteMessageContinueHeight += 5;
+    
+            writeMessageContinueHeight += 5;
+            formSendContinueHeight += 1;
+            articleMessagesContinueHeight -= 1;
+    
+            inputWriteMessage.style.height = `${inputWriteMessageContinueHeight}%`;
+            
+            writeMessage.style.height = `${writeMessageContinueHeight}%`;
+            formSend.style.height = `${formSendContinueHeight}%`;
+            articleMessages.style.height = `${articleMessagesContinueHeight}%`;
+        };
+    });
+    
+    const sendMessage = (msg = new Message(), owner='alien') =>
+    {
+        const message = document.createElement('div');
+    
+        const divSend = document.createElement('div');
+        const paragraphNickname = document.createElement('p')
+        const image = document.createElement('img')
+        const paragraphText = document.createElement('p');
+    
+        if(!msg.user.avatarURL)
+            msg.user.avatarURL = '../../image/TheVoidAvatarSite.png';
+        
+        if(!msg.user.username)
+        {
+            msg.user.nickname = 'Аноним'
+            msg.user.username = 'Anonimus'
+        }
+
+        divSend.className = `sended sended-${owner}`;
+        
+        paragraphNickname.innerText = `${msg.user.nickname}`;
+        paragraphNickname.className = 'message-nickname';
+
+        image.src = `${msg.user.avatarURL}`;
+        image.className = 'message-avatar';
+
+        paragraphText.innerText = `${msg.content}`;
+    
+        message.className = `message ${owner}-message`;
+        message.appendChild(divSend);
+        
+        divSend.appendChild(image);
+        divSend.appendChild(paragraphNickname);
+        
+        message.appendChild(paragraphText);
+        
+        articleMessages.appendChild(message);
+    
+        scrollTo();
+
+        nulled();
+    };
+    /* 
+    formSend.addEventListener('submit', element =>
+    {
+        element.preventDefault();
+    
+        for(let char of inputWriteMessage.value)
+        {
+            if(char != ' ')
+                break;
+    
+            if(inputWriteMessage.value.lastIndexOf(char) === inputWriteMessage.value.length-1)
+                return;
+        };
+    
+        if(inputWriteMessage.value === '')
+            return;
+    
+        sendMessage(inputWriteMessage.value);
+        
+        inputWriteMessage.value = '';
+    
+        articleMessages.scrollTo({
+            top: articleMessages.scrollHeight,
+            left: 0,
+            behavior: "smooth"
+        });
+    
+        return;
+    });
+     */
+    /* inputWriteMessage.onkeyup = (e) =>
+    {
+        if(e.which === 13 && e.shiftKey)
+        {
+            e.preventDefault();
+    
+            if(e.target.value === '' || e.target.value === '\n')
+                return;
+    
+            sendMessage(e.target.value);
+            
+            e.target.value = '';
+    
+            articleMessages.scrollTo({
+                top: articleMessages.scrollHeight,
+                left: 0,
+                behavior: "smooth"
+            });
+    
+            return;
+        };
+    }; */  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		//------------------
+		function showNewLine(direction, msg = new Message())
+        {
+			if(direction == "right")
+            {
+                sendMessage(msg, 'self')
+			}
+            else if(direction == "left")
+            {
+                sendMessage(msg, 'alien')
+			}
+		}
+		//------------------
+
+		const socket = io();
+        const userEmail = getCookie('VOID_USER_EMAIL');
+        const userPass = getCookie('VOID_USER_PASS');
+        const userAvatar = getCookie('VOID_USER_AVATAR')
+
+        let userData =
+        {
+            id: '',
+            username: '',
+            nickname: '',
+            avatar_url: '',
+            email: '',
+            password: '',
+            createdAt: 0,
+            updatedAt: 0
+        };
+
+        const userDataToMsg =
+        {
+            id: '',
+            username: '',
+            nickname: '',
+            avatarURL: '',
+            email: ''
+        };
+
+
+
+
+        let lastMessage;
+
+        const loadMessage = (msgs = [new Message()]) =>
+        {
+            for(let index in msgs)
+            {
+                const msg = msgs[msgs.length-1-index];
+
+                const message = document.createElement('div')
+
+                const divSend = document.createElement('div');
+                const paragraphNickname = document.createElement('p')
+                const paragraphText = document.createElement('p');
+                const image = document.createElement('img')
+                
+                if(msg.username == userData.username)
+                {
+                    divSend.className = 'sended sended-self';
+                    message.className = 'message self-message';
+                }
+                else
+                {
+                    divSend.className = 'sended sended-alien'
+                    message.className = 'message alien-message';
+                };
+        
+                paragraphNickname.innerText = `${msg.nickname}`;
+                paragraphNickname.className = 'message-nickname';
+                
+                image.src = `${msg.avatar_url}`;
+                image.className = 'message-avatar';
+
+                paragraphText.innerText = `${msg.content}`;
+
+                message.id = msg.id;
+                message.appendChild(divSend);
+                
+                divSend.appendChild(image);
+                divSend.appendChild(paragraphNickname);
+
+                message.appendChild(paragraphText);
+                
+                if(lastMessage)
+                    document.getElementById(lastMessage.id).before(message);
+                else
+                    articleMessages.appendChild(message);
+                
+                scrollTo();
+
+                lastMessage = msg;
+            }
+        };
+
+        socket.on('load message', msgs =>
+        {
+            loadMessage(msgs);
+        })
+
+
+    
+
+
+        const scrollTo = () =>
+        {
+            articleMessages.scrollTo
+            ({
+                top: articleMessages.scrollHeight,
+                left: 0,
+                behavior: "smooth"
+            });
+        }
+
+
+        const loadChats = (chats = { name:'', avatarURL:'' }) =>
+        {
+            setTimeout(() =>
+            {
+            }, 300)
+        }
+
+
+        const loginUser = () =>
+        {
+            setTimeout(() =>
+            {
+                formLogin.style.display = 'none';
+                userAvatarInUserDiv.style.display = 'block';
+                userDiv.style.display = 'flex'
+    
+                userNicknameInUserDiv.innerText = userData.nickname;
+                userAvatarInUserDiv.src = userData.avatar_url;
+                avatarYou.src = userData.avatar_url;
+
+                socket.emit('get messages', {count: 30, user: userData.username, nulled: false});
+
+                setTimeout(() =>
+                {
+                    articleMessages.onwheel = (e) =>
+                    {
+                        if(articleMessages.scrollTop <= 10)
+                            socket.emit('get messages', {count: 30, user: userData.username, nulled: true});
+                    };
+                }, 300)
+
+            }, 300);
+        };
+
+        socket.on('request account data', accountData =>
+        {
+            if(!accountData || !accountData.email)
+                return;
+
+            userData = accountData;
+
+            userDataToMsg.id = accountData.id;
+            userDataToMsg.email = accountData.email;
+            userDataToMsg.username = accountData.username;
+            userDataToMsg.nickname = accountData.nickname;
+            userDataToMsg.avatarURL = accountData.avatar_url;
+        });
+
+        socket.on('login user', isLoggined =>
+        {
+            console.log(isLoggined)
+            if(isLoggined)
+            {
+                loginUser();
+                loadChats(userData.chats);
+            }
+        });
+
+        socket.emit('get account data', { findType: 'findOne', type: 'email', id: '', username: '', email: userEmail });
+        
+        setTimeout(() =>
+        {
+            console.log(userEmail, userPass);
+            console.log(userData);
+
+            socket.emit('login user on main',
+            {
+                first:
+                {
+                    email: userEmail,
+                    password: userPass,
+                },
+                
+                second: userData
+            });
+        }, 1000)
+
+
+        formSend.addEventListener('submit', element =>
+        {
+            element.preventDefault();
+
+            for(let char of inputWriteMessage.value)
+            {
+                if(char != ' ')
+                    break;
+
+                if(inputWriteMessage.value.lastIndexOf(char) === inputWriteMessage.value.length-1)
+                    return;
+            };
+
+            if(inputWriteMessage.value === '')
+                return;
+
+            const msg = new Message(undefined, inputWriteMessage.value, { id: undefined, name: undefined }, userDataToMsg);
+
+            socket.emit('chat message', msg);
+            showNewLine('right', msg);
+            
+            inputWriteMessage.value = '';
+
+            scrollTo();
+
+            return;
+        });
+
+        inputWriteMessage.onkeyup = (e) =>
+        {
+            if(e.which === 13 && e.shiftKey)
+            {
+                e.preventDefault();
+
+                if(e.target.value === '' || e.target.value === '\n')
+                    return;
+
+                const msg = new Message(undefined, inputWriteMessage.value, {id: undefined, name: undefined}, userDataToMsg)
+
+                socket.emit('chat message', msg);  
+                showNewLine('right', msg);
+                
+                inputWriteMessage.value = '';
+                
+                e.target.value = '';
+
+                scrollTo();
+
+                return;
+            };
+        };
+
+/* 		$('form').submit((event=>
+        {
+			event.preventDefault()
+			socket.emit('chat message', $('input').val());
+
+			showNewLine('right', $('input').val())
+
+			$('input').val('')
+		})) */
+
+		//receive a message
+		socket.on('chat message', msg =>
+        {
+			showNewLine('left', msg)
+		});
+	})
+</script>
+</body>
+</html>
