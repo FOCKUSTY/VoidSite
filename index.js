@@ -3,6 +3,7 @@ const app = express();
 const http = require('http').createServer(app);
 const { addMessage, addAccount, findAccount, getAccount, getMessage, messages, loadMessage, getMessageCount } = require('./server/src/database/database');
 const { permanentHash, checkInput, unHash } = require('./server/src/database/hashing');
+const { createImageFile } = require('./server/src/index');
 const config = require('./config.json');
 
 const socket = require('socket.io');
@@ -18,7 +19,10 @@ io.on('connection', socket =>
 
 	socket.on('login account', data =>
 	{
-		findAccount(data.email, data.password);
+		findAccount(data.email, data.password).then(findData =>
+		{
+			socket.emit('login to account', findData)
+		})
 	});
 
 	socket.on('find account', (data = {type: '', email: '', username: ''}) =>
@@ -95,21 +99,39 @@ io.on('connection', socket =>
 	socket.on('get messages', async(data = {count: 10, user: 'username', nulled: false}) =>
 	{
 		let messageCount = 0;
+		let offset = 0;
+		let length = data.count;
 		
 		await getMessageCount().then(count => messageCount = count );
-		
-		if(messageCount === dataLoadedMessage.get(data.user))
-			return 0;
+
+		if(!data.nulled)
+			dataLoadedMessage.set(data.user, 0)
 
 		const getted = dataLoadedMessage.get(data.user);
 
+		if(messageCount <= dataLoadedMessage.get(data.user))
+			return 0;
+
 		if(getted && data.nulled)
+		{
 			dataLoadedMessage.set(data.user, getted+data.count);
+			offset = getted;
+			length = messageCount-getted;
+		}
 		else
+		{
 			dataLoadedMessage.set(data.user, data.count);
+			length = data.count;
+			offset = 0;
+		}
 
+		console.log(offset, data, messageCount, messageCount-dataLoadedMessage.get(data.user), dataLoadedMessage.get(data.user))
 
-		await loadMessage({length: data.count, offset: messageCount-dataLoadedMessage.get(data.user), type:'offset-length'}).then(async (messages) =>
+		await loadMessage({
+			length: data.count,
+			offset: offset,
+			type:'offset-length'
+		}).then(async (messages) =>
 		{
 			const ids = messages.split('\n');
 			const msgs = [];
@@ -128,8 +150,6 @@ io.on('connection', socket =>
 						};
 					});
 			};
-
-			console.log(msgs)
 
 			socket.emit('load message', msgs);
 		})
@@ -176,6 +196,15 @@ io.on('connection', socket =>
 	socket.on('disconnect', socket =>
 	{
 		console.log("> A client has disconnected!");
+	});
+
+	socket.on('create image file', (data = {path: '', name: '', buffer: ''}) =>
+	{
+		// data.buffer.replace(/^data:image\/\w+;base64,/, "");
+		data.buffer = Buffer.from(data.buffer, 'base64');
+		data.path = `${config.url}/` + data.path;
+		
+		createImageFile(data);
 	});
 })
 

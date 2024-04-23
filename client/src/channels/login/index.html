@@ -15,6 +15,12 @@
     <main class="login-main">
         <div id="login-login">
 
+            <div id="login-successed">
+                <span>Вы успешно зарегестрировались!</span>
+                <br>
+                <a href="../../channels/main/">Перейти на сайт!</a>
+            </div>
+
             <div id="login-input-email" class="login-input-inner-div">
                 <span id="login-email-paragraph" class="login-paragraph">
                     Ваша почта
@@ -43,7 +49,7 @@
             </div>
 
             <form action="" id="form-submit" class="login-input">
-                <input id="login-submit" type="submit" value="Зарегестрироваться">
+                <input id="login-submit" type="submit" value="Войти">
             </form>
 
             <div id="add">
@@ -73,6 +79,7 @@
             const loginSubmit = document.getElementById('form-submit');
             const loginEmailParagraph = document.getElementById('login-email-paragraph');
             const loginPasswordParagraph = document.getElementById('login-password-paragraph');
+            const loginSuccessed = document.getElementById('login-successed');
 
             function setCookie(name, value, options = {})
             {
@@ -145,9 +152,35 @@
                 };
             };
 
-            const login = () =>
+            socket.on('login to account', data =>
             {
-                
+
+                console.log(data)
+
+                if(!data.successed)
+                {
+                    loginSuccessed.innerHTML = `<span>Вы не смогли войти</span>\
+                    <br>\
+                    <span>${data.tag}</span>`
+                    loginSuccessed.style.display = 'flex'
+                }
+
+                else
+                    login(data.tag);
+            })
+
+            const login = (data) =>
+            {
+                loginSuccessed.innerHTML = '<span>Вы успешно зарегестрировались!</span>\
+                <br>\
+                <a href="../../channels/main/">Перейти на сайт!</a>';
+                loginSuccessed.style.display = 'flex'
+
+                passwordInput.value = '';
+                emailInput.value = '';
+
+                setCookie('VOID_USER_EMAIL', data.email);
+                setCookie('VOID_USER_PASS', data.password);
             };
 
             socket.on('checked input', password =>
@@ -190,7 +223,6 @@
                 for(let symbol of symbols)
                     if(passwordInput.value.indexOf(symbol) != -1)
                         isHasEnabledCharInPassword = true;
-
 
                 const data =
                 {

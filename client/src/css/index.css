@@ -312,6 +312,8 @@ button {
 }
 
 #cross {
+    position: absolute;
+
     height: 100%;
 
     margin: 2%;
@@ -686,7 +688,7 @@ button {
 
     border-radius: 50%;
 
-    margin: 20%;
+    margin: 15%;
 }
 
 #create-modal-chat-avatar-button:hover {

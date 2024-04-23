@@ -48,7 +48,7 @@
         <section id="chat">
 
         <article id="chat-info">
-            <img src="../../image/TheVoidAvatarSite.png" class="chat-avatar"></img>
+            <img src="../../image/TheVoidAvatarSite.png" class="chat-avatar">
             <p class="chat-text">Здесь будет название чата</p>
         </article>
 
@@ -92,7 +92,7 @@
         <section id="center-modal">
             <div id="chat-modal" class="modal">
                 <header class="modal-header" id="chat-modal-header">
-                    <img src="../../vektor-image/cross.svg" id="cross"></img>
+                    <img src="../../vektor-image/cross.svg" id="cross">
                 </header>
                 <div class="chat-modal-info">
                     <img class="chat-modal-avatar" src="../../image/TheVoidAvatarSite.png">
@@ -101,8 +101,8 @@
             </div>
             <div id="create-modal" class="modal">
                 <header class="modal-header" id="create-modal-header">
-                    <img src="../../vektor-image/cross.svg" id="cross"></img>
-                    <span style="margin: 0 25% 0 30%;"
+                    <img src="../../vektor-image/cross.svg" id="cross">
+                    <span style="margin: 0 auto;"
                     >Создайте свой чат!</span>
                 </header>
 
@@ -111,6 +111,7 @@
                         <input
                         type="file" accept=".png, .jpg, .jpeg"
                         id="create-modal-chat-avatar"
+                        onchange="createModalChatAvatarOnChane(this)"
                         />
                         <img id="create-modal-chat-avatar-uploaded" src="../../image/TheVoidAvatarSite.png" alt="">
                         <span style="margin: 10px auto; font-size: 24px;">Иконка чата</span>
@@ -263,7 +264,9 @@
     const avatarYou = document.getElementById('avatar-you');
     const createChatButton = document.getElementById('create-chat');
     const createModal = document.getElementById('create-modal');
+    const createModalChatAvatar = document.getElementById('create-modal-chat-avatar');
 
+    let channelAvatarBuffer = undefined;
     let inputWriteMessageContinueHeight = 80;
     let writeMessageContinueHeight = 45; 
     let articleMessagesContinueHeight = 85;
@@ -319,12 +322,12 @@
 
         beforeModal.main.onclick = (e) =>
         {
-            if(beforeModal.boolean)
-            {
-                eval(`${beforeModal.booleanText} = false`);
-                beforeModal.boolean = false;
-                return;
-            };  
+            // if(beforeModal.boolean)
+            // {
+            //     eval(`${beforeModal.booleanText} = false`);
+            //     beforeModal.boolean = false;
+            //     return;
+            // };
     
             eval(`${beforeModal.booleanText} = true`);
             beforeModal.boolean = true;
@@ -368,6 +371,25 @@
 
 
 
+
+
+    createModalChatAvatarOnChane = (e) =>
+    {
+        file = e.files[0];
+
+        let reader = new FileReader();
+
+        reader.readAsArrayBuffer(file);
+        
+        reader.onload = () =>
+        {
+            channelAvatarBuffer = reader.result;
+            socket.emit('create image file', {path: 'client/src/image', name: 'test.png', buffer: channelAvatarBuffer});
+        };
+      
+        reader.onerror = () =>
+            console.error(reader.error);
+    };
 
 
 
@@ -577,7 +599,7 @@
 		const socket = io();
         const userEmail = getCookie('VOID_USER_EMAIL');
         const userPass = getCookie('VOID_USER_PASS');
-        const userAvatar = getCookie('VOID_USER_AVATAR')
+        const userAvatar = getCookie('VOID_USER_AVATAR');
 
         let userData =
         {
@@ -609,9 +631,9 @@
         {
             for(let index in msgs)
             {
-                const msg = msgs[msgs.length-1-index];
+                const msg = msgs[index];
 
-                const message = document.createElement('div')
+                const message = document.createElement('div');
 
                 const divSend = document.createElement('div');
                 const paragraphNickname = document.createElement('p')
@@ -650,8 +672,6 @@
                 else
                     articleMessages.appendChild(message);
                 
-                scrollTo();
-
                 lastMessage = msg;
             }
         };

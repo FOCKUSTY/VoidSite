@@ -155,6 +155,16 @@ a {
     border-radius: 10px;
 }
 
+#login-successed {
+    display: none;
+    
+    flex-wrap: nowrap;
+    flex-direction: column;
+    align-items: center;
+
+    transition: 1s ease-in-out;
+}
+
 .login-input-inner-div {
     display: flex;
 
